@@ -2,6 +2,10 @@
 
 Démo portfolio d'un système RAG (Retrieval-Augmented Generation) qui vectorise la Bible Louis Segond 1910 et répond aux questions en langage naturel, avec citations des versets sources et mémoire de la conversation.
 
+🔗 **Démo :** [chatwithgod-pi.vercel.app](https://chatwithgod-pi.vercel.app/)
+📦 **Repo :** [github.com/lewenbach228/MAS--Agent-RAG---God-en-Live](https://github.com/lewenbach228/MAS--Agent-RAG---God-en-Live)
+📂 **Portfolio :** [architect-agent-portfolio.vercel.app](https://architect-agent-portfolio.vercel.app/)
+
 ## Pourquoi ce projet existe
 
 Je voulais comprendre et prouver un pipeline RAG complet, de bout en bout, sans wrapper, sans SDK magique, sans backend serveur.
@@ -126,7 +130,7 @@ Quand aucun passage pertinent n'est trouvé (salutation, question personnelle, h
 | LLM | OpenAI GPT-4o-mini (API) |
 | Indexation | Script Node.js via vite-node |
 | Police | Archivo (titres) + Inter (corps) — Google Fonts |
-| Déploiement cible | Vercel / Netlify (statique) |
+| Déploiement | Vercel (statique) |
 
 Aucune dépendance SDK OpenAI côté client — les appels API sont faits en `fetch()` natif.
 
@@ -147,9 +151,9 @@ src/
 │   └── llm/                  # OpenAI GPT-4o-mini + mock
 ├── features/
 │   └── chat/                 # Interface de chat (ChatPage, composants)
-├── components/               # UI réutilisable (à venir)
-├── hooks/                    # Hooks React (à venir)
-├── lib/                      # Utilitaires (à venir)
+├── components/               # UI réutilisable
+├── hooks/                    # Hooks React
+├── lib/                      # Utilitaires
 ├── styles/
 │   └── global.css            # Design system sombre/or
 scripts/
@@ -222,34 +226,15 @@ Voir [.env.example](./.env.example).
 
 ## Limites actuelles
 
-- Pas de streaming des réponses (réponse complète en une fois)
 - Pas de base de données persistante (mémoire navigateur uniquement)
 - Pas d'authentification ou de comptes utilisateurs
 - Vector store local et linéaire (pas de Pinecone / HNSW)
 - Pas de backend serveur (tout est statique côté client)
 - La Bible est en Français Louis Segond 1910 uniquement (une version, pas de multi-traduction)
-- L'image bannière (5 Mo) alourdit le chargement initial
 
 ## Angle portfolio
 
 Un système RAG complet, front-end uniquement, qui vectorise la Bible et répond aux questions en langage naturel avec citations sources. Architecture clean, vecteurs pré-calculés, mémoire conversationnelle et BYOK. Construit en mode mentor pour prouver une compétence de bout en bout sur les pipelines RAG.
-
-## Améliorations futures
-
-- **Streaming** des réponses token par token pour une expérience plus naturelle
-- **Questions suggérées** après chaque réponse pour relancer la conversation
-- **Multi-versions** de la Bible (NEG 1979, Segond 21, anglais)
-- **Navigation directe** des livres et chapitres
-- **Export** de la conversation (image, PDF)
-- **Compression** de l'image bannière pour réduire le poids
-- **Déploiement** Vercel / Netlify avec URL publique
-
-## Assets de démo
-
-- [Schéma d'architecture Mermaid](#vue-densemble-de-larchitecture) (ci-dessus)
-- Captures d'écran — à venir
-- Vidéo de démonstration — à venir
-- [3 posts LinkedIn](/internal/campaigns/god-en-live/posts/) sur les défis techniques du projet
 
 ---
 

@@ -11,6 +11,7 @@
 
 import type { Chunk } from '../bible/types';
 import type { LLMResponse, ConversationTurn } from '../../services/llm/types';
+import type { LLMStreamCallbacks } from '../../services/llm/types';
 import { LocalVectorStore } from '../../services/vector-store/localVectorStore';
 import { createEmbeddingService } from '../../services/embeddings/openaiEmbeddings';
 import { createLLMService } from '../../services/llm/openaiLLM';
@@ -44,6 +45,16 @@ export interface RAGResult {
   answer: string;
   citations: string[];
   mode: 'demo' | 'connecte';
+}
+
+/**
+ * Callbacks pour le streaming depuis le RAGEngine.
+ * onComplete fournit les citations extraites des chunks retrouves.
+ */
+export interface RAGStreamCallbacks {
+  onToken: (token: string) => void;
+  onComplete: (citations: string[]) => void;
+  onError: (error: Error) => void;
 }
 
 // === Moteur RAG complet (mode connecte) ===
@@ -191,6 +202,63 @@ export class RAGEngine {
         citations: [],
         mode: 'connecte',
       };
+    }
+  }
+
+  /**
+   * Pose une question au moteur RAG en mode STREAMING.
+   * Les tokens arrivent un par un via callbacks.onToken.
+   * A la fin, callbacks.onComplete fournit les citations.
+   */
+  async askStream(
+    question: string,
+    callbacks: RAGStreamCallbacks,
+    conversationHistory?: ConversationTurn[]
+  ): Promise<void> {
+    if (!this.initialized || !this.store) {
+      callbacks.onError(new Error("Le moteur RAG n'est pas initialise."));
+      return;
+    }
+
+    try {
+      // 1. Vectoriser la question
+      const embeddings = createEmbeddingService(this.apiKey);
+      const questionVector = await embeddings.embedText(question);
+
+      // 2. Chercher les 5 chunks les plus proches
+      const results = this.store.search(questionVector, 5);
+
+      // 3. Construire le contexte et les citations
+      const hasPassages = results.length > 0;
+      const context = hasPassages
+        ? results
+            .map(
+              (r) =>
+                `--- ${r.chunk.source.book} ${r.chunk.source.chapter}:${r.chunk.source.verses} ---\n${r.chunk.text}`
+            )
+            .join('\n\n')
+        : '';
+
+      const citations = hasPassages
+        ? [
+            ...new Set(
+              results.map(
+                (r) => `${r.chunk.source.book} ${r.chunk.source.chapter}:${r.chunk.source.verses}`
+              )
+            ),
+          ]
+        : [];
+
+      // 4. Lancer le streaming LLM
+      const llm = createLLMService(this.apiKey);
+      await llm.generateAnswerStream(question, context, {
+        onToken: (token) => callbacks.onToken(token),
+        onComplete: () => callbacks.onComplete(citations),
+        onError: (error) => callbacks.onError(error),
+      }, conversationHistory);
+    } catch (error) {
+      console.error('Erreur pipeline RAG (stream):', error);
+      callbacks.onError(error instanceof Error ? error : new Error(String(error)));
     }
   }
 }

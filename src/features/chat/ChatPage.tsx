@@ -12,6 +12,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import type { ChatMessage, AppMode } from './types';
 import type { ConversationTurn } from '../../services/llm/types';
 import { RAGEngine, DEMO_QUESTIONS } from '../../domain/rag/ragPipeline';
+import type { RAGStreamCallbacks } from '../../domain/rag/ragPipeline';
 import { HeroHeader } from './HeroHeader';
 import { ModeSelector } from './ModeSelector';
 import { DemoQuestions } from './DemoQuestions';
@@ -124,34 +125,60 @@ export function ChatPage() {
           };
           setMessages((prev) => [...prev, assistantMsg]);
         } else {
-          try {
-            // Construire l'historique de la conversation pour la memoire
-            const history: ConversationTurn[] = messages
-              .filter((m) => m.role === 'user' || m.role === 'assistant')
-              .map((m) => ({
-                role: m.role as 'user' | 'assistant',
-                content: m.text,
-              }));
+          // Construire l'historique de la conversation pour la memoire
+          const history: ConversationTurn[] = messages
+            .filter((m) => m.role === 'user' || m.role === 'assistant')
+            .map((m) => ({
+              role: m.role as 'user' | 'assistant',
+              content: m.text,
+            }));
 
-            const result = await engine.ask(question, history);
-            const assistantMsg: ChatMessage = {
-              id: `assistant-${Date.now()}`,
-              role: 'assistant',
-              text: result.answer,
-              citations: result.citations,
-              mode: 'connecte',
-            };
-            setMessages((prev) => [...prev, assistantMsg]);
+          // Creer le message assistant VIDE immediatement (le streaming va le remplir)
+          const assistantId = `assistant-${Date.now()}`;
+          setMessages((prev) => [...prev, {
+            id: assistantId,
+            role: 'assistant',
+            text: '',
+            citations: [],
+            mode: 'connecte',
+          }]);
+
+          // Lancer le streaming
+          try {
+            await engine.askStream(question, {
+              onToken: (token: string) => {
+                setMessages((prev) =>
+                  prev.map((m) =>
+                    m.id === assistantId ? { ...m, text: m.text + token } : m
+                  )
+                );
+              },
+              onComplete: (citations: string[]) => {
+                setMessages((prev) =>
+                  prev.map((m) =>
+                    m.id === assistantId ? { ...m, citations } : m
+                  )
+                );
+              },
+              onError: (_error: Error) => {
+                setMessages((prev) =>
+                  prev.map((m) =>
+                    m.id === assistantId
+                      ? { ...m, text: 'Erreur lors de la recherche. Verifie ta cle API OpenAI.' }
+                      : m
+                  )
+                );
+              },
+            }, history);
           } catch (err) {
             console.error('Erreur RAG:', err);
-            const assistantMsg: ChatMessage = {
-              id: `assistant-${Date.now()}`,
-              role: 'assistant',
-              text: 'Erreur lors de la recherche. Verifie ta cle API OpenAI.',
-              citations: [],
-              mode: 'connecte',
-            };
-            setMessages((prev) => [...prev, assistantMsg]);
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantId
+                  ? { ...m, text: 'Erreur lors de la recherche. Verifie ta cle API OpenAI.' }
+                  : m
+              )
+            );
           }
         }
       }

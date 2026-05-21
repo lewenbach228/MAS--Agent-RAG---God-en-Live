@@ -159,14 +159,16 @@ export class RAGEngine {
       const embeddings = createEmbeddingService(this.apiKey);
       const questionVector = await embeddings.embedText(question);
 
-      // 2. Chercher les 5 chunks les plus proches
-      const results = this.store.search(questionVector, 5);
+      // 2. Chercher les 10 chunks les plus proches puis filtrer par score
+      const SIMILARITY_THRESHOLD = 0.5;
+      const allResults = this.store.search(questionVector, 10);
+      const relevantResults = allResults.filter((r) => r.score >= SIMILARITY_THRESHOLD);
 
       // 3. Construire le contexte et les citations
-      //    Si aucun passage trouve → contexte vide (le LLM gere les salutations/hors-sujet)
-      const hasPassages = results.length > 0;
+      //    Si aucun passage pertinent → contexte vide (le LLM gere les salutations/hors-sujet)
+      const hasPassages = relevantResults.length > 0;
       const context = hasPassages
-        ? results
+        ? relevantResults
             .map(
               (r) =>
                 `--- ${r.chunk.source.book} ${r.chunk.source.chapter}:${r.chunk.source.verses} ---\n${r.chunk.text}`
@@ -177,7 +179,7 @@ export class RAGEngine {
       const citations = hasPassages
         ? [
             ...new Set(
-              results.map(
+              relevantResults.map(
                 (r) => `${r.chunk.source.book} ${r.chunk.source.chapter}:${r.chunk.source.verses}`
               )
             ),
@@ -225,13 +227,15 @@ export class RAGEngine {
       const embeddings = createEmbeddingService(this.apiKey);
       const questionVector = await embeddings.embedText(question);
 
-      // 2. Chercher les 5 chunks les plus proches
-      const results = this.store.search(questionVector, 5);
+      // 2. Chercher les 10 chunks les plus proches puis filtrer par score
+      const SIMILARITY_THRESHOLD = 0.5;
+      const allResults = this.store.search(questionVector, 10);
+      const relevantResults = allResults.filter((r) => r.score >= SIMILARITY_THRESHOLD);
 
       // 3. Construire le contexte et les citations
-      const hasPassages = results.length > 0;
+      const hasPassages = relevantResults.length > 0;
       const context = hasPassages
-        ? results
+        ? relevantResults
             .map(
               (r) =>
                 `--- ${r.chunk.source.book} ${r.chunk.source.chapter}:${r.chunk.source.verses} ---\n${r.chunk.text}`
@@ -242,7 +246,7 @@ export class RAGEngine {
       const citations = hasPassages
         ? [
             ...new Set(
-              results.map(
+              relevantResults.map(
                 (r) => `${r.chunk.source.book} ${r.chunk.source.chapter}:${r.chunk.source.verses}`
               )
             ),

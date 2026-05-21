@@ -59,7 +59,7 @@ Ce projet **n'est pas** :
 - un modèle entraîné sur la Bible
 - un système distribué avec Pinecone, LangChain ou backend
 - une application de production avec authentification, base de données ou scaling
-- une interface en temps réel (pas de streaming dans cette V1)
+- une interface en temps réel (streaming actif dans cette V2)
 
 ## Vue d'ensemble de l'architecture
 
@@ -112,6 +112,8 @@ Quand aucun passage pertinent n'est trouvé (salutation, question personnelle, h
 - **Pipeline RAG complet** : embedding → vector search → LLM generation
 - **Vecteurs pré-calculés** : démarrage instantané, pas d'attente à l'initialisation
 - **Mémoire conversationnelle** : les 10 derniers tours sont passés au LLM
+- **Streaming des réponses** : les mots arrivent un par un comme dans ChatGPT
+- **Citations cliquables** : cliquez sur un verset pour voir le texte complet
 - **Citations fiables** : issues des chunks retrouvés, pas du texte généré
 - **Mode demo** : 3 questions seedées, sans clé API, pour tester l'interface
 - **Mode connecté** : BYOK, n'importe quelle question, pipeline réel
@@ -222,6 +224,8 @@ Voir [.env.example](./.env.example).
 - Citations extraites des passages sources
 - Gestion des salutations et hors-sujet par le LLM
 - Interface de chat complète (thème sombre, typographie Archivo/Inter)
+- Streaming des réponses token par token
+- Citations cliquables affichant le texte du verset
 - 25 tests unitaires, build stable
 
 ## Limites actuelles
@@ -229,7 +233,6 @@ Voir [.env.example](./.env.example).
 - Pas de base de données persistante (mémoire navigateur uniquement)
 - Pas d'authentification ou de comptes utilisateurs
 - Vector store local et linéaire (pas de Pinecone / HNSW)
-- Pas de backend serveur (tout est statique côté client)
 - La Bible est en Français Louis Segond 1910 uniquement (une version, pas de multi-traduction)
 
 ## Angle portfolio

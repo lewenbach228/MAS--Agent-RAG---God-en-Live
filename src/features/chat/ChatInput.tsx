@@ -36,6 +36,7 @@ export function ChatInput({
         onChange={(e) => setInput(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
+        maxLength={5000}
         autoFocus
       />
       <button

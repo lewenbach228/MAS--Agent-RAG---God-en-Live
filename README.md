@@ -214,6 +214,9 @@ Voir [.env.example](./.env.example).
 - Les secrets ne sont jamais commités dans le dépôt
 - Aucune action externe réelle n'est déclenchée
 - Le code OpenAI SDK n'est pas utilisé — les appels sont en `fetch()` natif (pas de dépendance cachée)
+- Le prompt system inclut des **gardes anti-injection** : le LLM ne peut pas être détourné de son rôle de guide spirituel
+- La taille des questions est **limitée à 5000 caractères** côté UI
+- En mode connecté (BYOK), la clé API est visible dans les requêtes réseau — c'est le modèle assumé : chaque utilisateur utilise sa propre clé
 
 ## Périmètre actuel
 

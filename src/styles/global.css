@@ -134,7 +134,7 @@ body {
 .hero-header__image-wrapper {
   width: 100%;
   max-width: 540px;
-  height: 240px;
+  aspect-ratio: 540 / 240;
   border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid rgba(201, 169, 110, 0.15);

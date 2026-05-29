@@ -3,7 +3,7 @@
 Démo portfolio d'un système RAG (Retrieval-Augmented Generation) qui vectorise la Bible Louis Segond 1910 et répond aux questions en langage naturel, avec citations des versets sources et mémoire de la conversation.
 
 🔗 **Démo :** [chatwithgod-pi.vercel.app](https://chatwithgod-pi.vercel.app/)
-📦 **Repo :** [github.com/lewenbach228/MAS--Agent-RAG---God-en-Live](https://github.com/lewenbach228/MAS--Agent-RAG---God-en-Live)
+
 📂 **Portfolio :** [architect-agent-portfolio.vercel.app](https://architect-agent-portfolio.vercel.app/)
 
 ## Pourquoi ce projet existe
@@ -238,10 +238,5 @@ Voir [.env.example](./.env.example).
 - Vector store local et linéaire (pas de Pinecone / HNSW)
 - La Bible est en Français Louis Segond 1910 uniquement (une version, pas de multi-traduction)
 
-## Angle portfolio
-
-Un système RAG complet, front-end uniquement, qui vectorise la Bible et répond aux questions en langage naturel avec citations sources. Architecture clean, vecteurs pré-calculés, mémoire conversationnelle et BYOK. Construit en mode mentor pour prouver une compétence de bout en bout sur les pipelines RAG.
-
 ---
 
-*Projet portfolio construit pour prouver une compétence RAG de bout en bout. Code libre et documenté.*

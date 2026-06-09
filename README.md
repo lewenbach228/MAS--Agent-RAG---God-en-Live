@@ -160,16 +160,15 @@ VITE_APP_MODE=demo            # Mode par défaut
 ## Tests
 
 ```bash
-npm test              # 26 tests (vitest)
+npm test              # 24 tests (vitest)
 ```
 
 | Fichier | Tests | Couvre |
 |---------|-------|--------|
-| `tests/domain/bible/bibleLoader.test.ts` | 12 | 66 books, chunking, verse lookup |
+| `tests/domain/bible/bibleLoader.test.ts` | 11 | 66 books, chunking, verse lookup |
 | `tests/domain/rag/ragPipeline.test.ts` | 5 | Demo questions, rejection, answer format, citations |
 | `tests/services/vector-store/localVectorStore.test.ts` | 7 | Add, search, cosine similarity, clear |
 | `tests/App.test.tsx` | 1 | Renders heading, input, demo button |
-| `tests/getStarterChecklist.test.ts` | 1 | Starter checklist |
 
 ---
 
